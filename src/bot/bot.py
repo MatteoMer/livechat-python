@@ -40,7 +40,7 @@ async def on_message(message):
                 headers = {"x_bot_id": BOT_ID}
 
                 response = requests.post(
-                    "http://127.0.0.1:8000/new_media/",
+                    "https://play-on-stream.onrender.com/new_media/",
                     json={
                         "media_url": media_url,
                         "message": message.content,

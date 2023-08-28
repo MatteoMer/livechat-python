@@ -1,5 +1,5 @@
 // Connect to WebSocket
-const ws = new WebSocket("ws://127.0.0.1:8000/ws/");
+const ws = new WebSocket("wss://play-on-stream.onrender.com/ws/");
 
 ws.addEventListener('open', () => {
     console.log('Connected to the WebSocket');
