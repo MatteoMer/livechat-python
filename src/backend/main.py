@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List
 import os
 from dotenv import load_dotenv
+from urllib.parse import urlsplit
 
 # Load environment variables from .env file
 load_dotenv()
@@ -26,15 +27,24 @@ media_storage: List[str] = []
 connected_clients = []
 
 
+def remove_url_parameters(url: str) -> str:
+    # Using urlsplit to break down the URL into its components, then rebuild it without the query part
+    url_parts = urlsplit(url)
+    clean_url = url_parts._replace(query="")
+    return clean_url.geturl()
+
+
 @app.post("/new_media/")
 async def new_media(body: Body, x_bot_id: str = Header(None)):
     # Check if the request is coming from the authorized bot
-    # print(x_bot_id, DISCORD_BOT_ID)
     # if x_bot_id != DISCORD_BOT_ID:
     #     raise HTTPException(status_code=401, detail="Unauthorized")
 
-    # Add the media URL to storage
-    media_storage.append(body.media_url)
+    # Clean the media URL
+    clean_media_url = remove_url_parameters(body.media_url)
+
+    # Add the cleaned media URL to storage
+    media_storage.append(clean_media_url)
     media_storage.append(body.message)
     print("noway")
 
@@ -44,7 +54,7 @@ async def new_media(body: Body, x_bot_id: str = Header(None)):
         await client.send_json(
             {
                 "action": "new_media",
-                "media_url": body.media_url,
+                "media_url": clean_media_url,
                 "message": body.message,
             }
         )
